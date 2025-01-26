@@ -19,6 +19,16 @@ const db = new sqlite3.Database(dbPath, (err) => {
     console.log('Conexión exitosa a la base de datos:', dbPath);
 });
 
+// Crear la tabla 'expenses' si no existe
+db.run(`
+    CREATE TABLE IF NOT EXISTS expenses (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        description TEXT NOT NULL,
+        amount REAL NOT NULL,
+        date TEXT NOT NULL
+    );
+`);
+
 // Middleware
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
