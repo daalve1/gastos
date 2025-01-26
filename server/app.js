@@ -6,7 +6,9 @@ const fs = require('fs');
 const app = express();
 
 // Ruta al archivo de base de datos
-const dbPath = path.join(__dirname, 'database.sqlite');
+const dbPath = process.env.RENDER_EXTERNAL_STORAGE
+? path.join(process.env.RENDER_EXTERNAL_STORAGE, 'database.sqlite')
+: path.join(__dirname, 'database.sqlite');
 
 // Crear la conexión con la base de datos
 const db = new sqlite3.Database(dbPath, (err) => {
