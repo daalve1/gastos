@@ -9,17 +9,12 @@ body {
 }
 
 .expense-form, .expense-list {
-    margin: 20px auto;
-    padding: 20px;
-    border: 1px solid #ddd;
     max-width: 500px;
-    border-radius: 8px;
 }
 
-input[type="text"], input[type="number"], input[type="date"] {
+select, input[type="text"], input[type="number"], input[type="date"] {
     width: 100%;
     padding: 8px;
-    margin: 8px 0;
     border: 1px solid #ddd;
     border-radius: 4px;
 }
@@ -31,6 +26,7 @@ button[type="submit"] {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    float: right;
 }
 
 button[type="submit"]:hover {
@@ -49,7 +45,6 @@ button[type="submit"]:hover {
     border-radius: 50%;
     display: flex;
     justify-content: center;
-    align-items: center;
     font-size: 30px;
     cursor: pointer;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -83,6 +78,7 @@ button[type="submit"]:hover {
     padding: 6px;
     cursor: pointer;
     text-transform: uppercase;
+    font-size: .9em;
 }
 
 /* Animaciones */
@@ -100,4 +96,12 @@ button[type="submit"]:hover {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+dl {
+    margin-bottom: .2rem !important;
+}
+
+dt {
+    font-size: .9em;
 }

@@ -1,15 +1,41 @@
 <div class="expense-form">
-    <h2>Registrar Nuevo Gasto</h2>
-    <form id="expenseForm">
-        <label for="description">Descripción:</label>
-        <input type="text" id="description" name="description" required>
-
-        <label for="amount">Monto:</label>
-        <input type="number" id="amount" name="amount" required>
-
-        <label for="date">Fecha:</label>
-        <input type="date" id="date" name="date" required>
-
-        <button type="submit">Registrar Gasto</button>
+    <form id="expenseForm" data-callback="handleSubmitCrearGasto">
+        <div class="row">
+            <dl>
+                <dt for="type">Tipo</dt>
+                <dd>
+                    <select id="type" name="type" required>
+                        <option value="1">Coche</option>
+                        <option value="2">Value 2</option>
+                        <option value="3">Value 3</option>
+                    </select>
+                </dd>
+            </dl>
+        </div>
+        <div class="row">
+            <dl>
+                <dt for="amount">Cantidad</dt>
+                <dd> 
+                    <input type="number" id="amount" name="amount" required />
+                </dd>
+            </dl>
+        </div>
+        <div class="row">
+            <dl>
+                <dt for="date">Fecha</dt>
+                <dd>
+                    <input type="date" id="date" name="date" required />
+                </dd>
+            </dl>
+        </div>
+        <div class="row">
+            <dl>
+                <dt for="comment">Observaciones: <span id="commentLength">0/20</span></dt>
+                <dd>
+                    <input type="text" id="comment" name="comment" maxlength="20" />
+                </dd>
+            </dl>
+        </div>
+        <button type="submit">Enviar</button>
     </form>
 </div>

@@ -1,5 +1,7 @@
 // expensesList.js - Maneja la carga de los gastos y su visualización
 
+import { showToast } from './toast_module.js';
+
 // Función para mostrar el modal de confirmación
 function showConfirmationModal(expenseId) {
     // Verifica que el modal está inicializado antes de intentar mostrarlo
@@ -26,29 +28,33 @@ async function deleteExpense(expenseId) {
     if(response.ok) {
         loadExpenses();
     } else {
-        alert('No se pudo eliminar el gasto');
+        showToast('No se pudo eliminar el gasto', 'danger');
     }
 }
 
-async function loadExpenses() {
+export default async function loadExpenses() {
+    console.log('Cargando gastos...');
+
     const response = await fetch('/api/expenses');
-    const expenses = await response.json();
+    
+    if(response.ok) {
+        console.log(response);
+        const expenses = await response.json();
 
-    const tableBody = document.querySelector('#expensesTable tbody');
-    tableBody.innerHTML = ''; // Limpiar la tabla antes de añadir los nuevos datos
+        const tableBody = document.querySelector('#expensesTable tbody');
+        tableBody.innerHTML = ''; // Limpiar la tabla antes de añadir los nuevos datos
 
-    expenses.forEach(expense => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${expense.id}</td>
-            <td>${expense.description}</td>
-            <td>${expense.amount}</td>
-            <td>${expense.date}</td>
-            <td><i class="bi bi-trash3" onClick="showConfirmationModal(${expense.id})"></i></td>
-        `;
-        tableBody.appendChild(row);
-    });
+        expenses.forEach(expense => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${expense.description}</td>
+                <td>${expense.amount}</td>
+                <td>${expense.date}</td>
+                <td><i class="bi bi-trash3" onClick="showConfirmationModal(${expense.id})"></i></td>
+            `;
+            tableBody.appendChild(row);
+        });
+    } else {
+        showToast('No se pudo cargar los gastos', 'danger');
+    }
 }
-
-// Cargar los gastos cuando se cargue la vista
-loadExpenses();

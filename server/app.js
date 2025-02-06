@@ -23,7 +23,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
 db.run(`
     CREATE TABLE IF NOT EXISTS expenses (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        description TEXT NOT NULL,
+        type TEXT NOT NULL,
         amount REAL NOT NULL,
         date TEXT NOT NULL
     );
@@ -32,8 +32,6 @@ db.run(`
 // Middleware
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
-
-// Rutas
 
 // Eliminar un gasto
 app.delete('/api/expenses/delete/:id', (req, res) => {
@@ -65,6 +63,7 @@ app.get('/api/expenses', (req, res) => {
                 message: 'Error al obtener los gastos.',
             });
         }
+        console.log('📊 Gastos recuperados:', rows);
         res.json(rows);
     });
 });
@@ -72,14 +71,14 @@ app.get('/api/expenses', (req, res) => {
 // Agregar un nuevo gasto
 app.post('/api/expenses', (req, res) => {
     console.log('Recibiendo solicitud POST /api/expenses...');
-    const { description, amount, date } = req.body;
+    const { type, amount, date } = req.body;
 
     // Validaciones de entrada
-    if (!description || !amount || !date) {
+    if (!type || !amount || !date) {
         console.error('Faltan campos obligatorios.');
         return res.status(400).json({
             status: 'error',
-            message: 'Todos los campos (description, amount, date) son obligatorios.',
+            message: 'Todos los campos son obligatorios.',
         });
     }
 
@@ -87,7 +86,7 @@ app.post('/api/expenses', (req, res) => {
         console.error('Monto no válido:', amount);
         return res.status(400).json({
             status: 'error',
-            message: 'El monto debe ser un número positivo.',
+            message: 'La cantidad debe ser un número positivo.',
         });
     }
 
@@ -106,13 +105,13 @@ app.post('/api/expenses', (req, res) => {
         console.error('Fecha fuera de rango:', date);
         return res.status(400).json({
             status: 'error',
-            message: 'La fecha debe estar dentro del último año y no ser futura.',
+            message: 'La fecha no puede ser posterior al día actual.',
         });
     }
 
     // Consulta para insertar el gasto
-    const query = 'INSERT INTO expenses (description, amount, date) VALUES (?, ?, ?)';
-    db.run(query, [description, amount, date], function (err) {
+    const query = 'INSERT INTO expenses (type, amount, date) VALUES (?, ?, ?)';
+    db.run(query, [type, amount, date], function (err) {
         if (err) {
             console.error('Error al agregar el gasto:', err.message);
             return res.status(500).json({
@@ -122,6 +121,11 @@ app.post('/api/expenses', (req, res) => {
         }
         res.json({ id: this.lastID });
     });
+});
+
+// Redirige cualquier ruta desconocida al index para manejo del lado del cliente
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 // Manejo de errores globales

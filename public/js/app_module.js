@@ -1,7 +1,8 @@
-import { loadView } from "./navigation_module.js";
+/**
+ * Módulo para gestionar la aplicación.
+ */
 
-// Evento para esperar a cargar el DOM antes de ejecutar el código
-window.addEventListener('load', () => {
-    // Cargar la vista inicial (formulario de gastos)
-    loadView('expensesForm.html', 'js/expensesForm.js');
-});
+import { handleSubmitCrearGasto } from './expensesForm.js';
+
+// Asignar la función manualmente a `window` para que esté disponible en el ámbito global
+window.handleSubmitCrearGasto = handleSubmitCrearGasto;
