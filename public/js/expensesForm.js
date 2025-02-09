@@ -39,6 +39,41 @@ async function enviarGasto(form) {
     processResultEnviarGasto(response);
 }
 
+// Función async para cargar los tipos de gasto y poblar el select
+async function cargarTiposDeGasto() {
+
+    const response = await fetch('/api/expenses-types');
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`); // Lanza un error si la respuesta HTTP no es exitosa
+    }
+
+    const data = await response.json(); // Convierte la respuesta a JSON y espera el resultado
+
+    const selectExpensesTypes = document.getElementById('expenseType'); // Obtiene el elemento select por su ID
+
+    if (!selectExpensesTypes) {
+        console.error('Elemento select con id "expenseType" no encontrado en el HTML.');
+        return; // Sale de la función si no encuentra el select
+    }
+
+     // Limpia el select antes de añadir nuevas opciones (opcional)
+    selectExpensesTypes.innerHTML = '';
+
+    // Crea una opción por defecto (opcional, placeholder)
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = 'Selecciona un tipo de gasto';
+    selectExpensesTypes.appendChild(defaultOption);
+
+    data.forEach(tipoGasto => {
+        const option = document.createElement('option');
+        option.value = tipoGasto.id;
+        option.textContent = tipoGasto.description;
+        selectExpensesTypes.appendChild(option);
+    });
+}
+
 export function handleSubmitCrearGasto(form) {
     console.log('Enviando formulario...');
 
@@ -69,6 +104,10 @@ function handleChangeComment(e) {
 }
 
 export default function initializeEvents() {
+    // Cargar tipos de gasto
+    cargarTiposDeGasto();
+
+    // Manejar evento de cambio en el campo de comentario
     document.getElementById('comment').addEventListener('input', handleChangeComment);
 }
 

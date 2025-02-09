@@ -36,8 +36,8 @@ export default async function loadExpenses() {
     console.log('Cargando gastos...');
 
     const response = await fetch('/api/expenses');
-    
-    if(response.ok) {
+
+    if (response.ok) {
         console.log(response);
         const expenses = await response.json();
 
@@ -45,13 +45,43 @@ export default async function loadExpenses() {
         tableBody.innerHTML = ''; // Limpiar la tabla antes de añadir los nuevos datos
 
         expenses.forEach(expense => {
+            console.log(expense);
             const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${expense.description}</td>
-                <td>${expense.amount}</td>
-                <td>${expense.date}</td>
-                <td><i class="bi bi-trash3" onClick="showConfirmationModal(${expense.id})"></i></td>
-            `;
+
+            // Crear el icono de eliminar programáticamente
+            const deleteIcon = document.createElement('i');
+            deleteIcon.classList.add('bi', 'bi-trash3'); // Añadir clases de Bootstrap Icons
+            deleteIcon.style.cursor = 'pointer'; // Opcional: cambiar el cursor para indicar que es clickable
+
+            // Añadir event listener al icono para mostrar el modal
+            deleteIcon.addEventListener('click', function() { // Usamos una función anónima para acceder al scope correcto
+                showConfirmationModal(expense.id); // Llamada a showConfirmationModal dentro del scope del módulo
+            });
+
+            // Crear las celdas de la tabla
+            const expenseTypeCell = document.createElement('td');
+            expenseTypeCell.textContent = expense.expenseType;
+
+            const commentCell = document.createElement('td');
+            commentCell.textContent = expense.comment;
+
+            const amountCell = document.createElement('td');
+            amountCell.textContent = expense.amount;
+
+            const dateCell = document.createElement('td');
+            dateCell.textContent = expense.date;
+
+            const deleteCell = document.createElement('td');
+            deleteCell.appendChild(deleteIcon); // Añadir el icono a la celda de eliminar
+
+            // Añadir celdas a la fila
+            row.appendChild(expenseTypeCell);
+            row.appendChild(commentCell);
+            row.appendChild(amountCell);
+            row.appendChild(dateCell);
+            row.appendChild(deleteCell);
+
+
             tableBody.appendChild(row);
         });
     } else {

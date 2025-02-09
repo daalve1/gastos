@@ -19,15 +19,48 @@ const db = new sqlite3.Database(dbPath, (err) => {
     console.log('Conexión exitosa a la base de datos:', dbPath);
 });
 
-// Crear la tabla 'expenses' si no existe
-db.run(`
-    CREATE TABLE IF NOT EXISTS expenses (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        type TEXT NOT NULL,
-        amount REAL NOT NULL,
-        date TEXT NOT NULL
-    );
-`);
+db.serialize(() => {
+    // Crear la tabla 'expenses' si no existe
+    db.run(`
+        CREATE TABLE IF NOT EXISTS expenses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            expenseType INTEGER NOT NULL,
+            amount REAL NOT NULL,
+            date TEXT NOT NULL,
+            comment TEXT
+        );
+    `);
+
+    db.run(`
+        CREATE TABLE IF NOT EXISTS expenses_types (
+            id INTEGER PRIMARY KEY,
+            category INTEGER,
+            description TEXT NOT NULL
+        );
+    `);
+
+    const valuesToInsert = [
+        { id: 1, category: 1, description: 'Coche' },
+        { id: 2, category: 1, description: 'Supermercado' },
+        { id: 3, category: 1, description: 'Amazon' },
+        { id: 4, category: 1, description: 'Facturas' },
+        { id: 5, category: 1, description: 'Restaurantes' },
+        { id: 6, category: 1, description: 'Guardería' },
+        { id: 7, category: 1, description: 'Netflix' },
+        { id: 8, category: 1, description: 'Hipoteca' },
+        { id: 9, category: 1, description: 'IBI' },
+        { id: 10, category: 1, description: 'Seguro casa' }
+    ];
+
+    valuesToInsert.forEach(item => {
+        db.run(`INSERT OR IGNORE INTO expenses_types (id, category, description) VALUES (?, ?, ?)`, [item.id, item.category, item.description], function(err) {
+            if (err) {
+                return console.error(err.message);
+            }
+            console.log(`Row inserted for ${item.description}`);
+        });
+    });
+});
 
 // Middleware
 app.use(express.json());
@@ -71,10 +104,10 @@ app.get('/api/expenses', (req, res) => {
 // Agregar un nuevo gasto
 app.post('/api/expenses', (req, res) => {
     console.log('Recibiendo solicitud POST /api/expenses...');
-    const { type, amount, date } = req.body;
+    const { expenseType, amount, date, comment } = req.body;
 
     // Validaciones de entrada
-    if (!type || !amount || !date) {
+    if (!expenseType || !amount || !date || !comment) {
         console.error('Faltan campos obligatorios.');
         return res.status(400).json({
             status: 'error',
@@ -110,8 +143,8 @@ app.post('/api/expenses', (req, res) => {
     }
 
     // Consulta para insertar el gasto
-    const query = 'INSERT INTO expenses (type, amount, date) VALUES (?, ?, ?)';
-    db.run(query, [type, amount, date], function (err) {
+    const query = 'INSERT INTO expenses (expenseType, amount, date, comment) VALUES (?, ?, ?, ?)';
+    db.run(query, [expenseType, amount, date, comment], function (err) {
         if (err) {
             console.error('Error al agregar el gasto:', err.message);
             return res.status(500).json({
@@ -120,6 +153,21 @@ app.post('/api/expenses', (req, res) => {
             });
         }
         res.json({ id: this.lastID });
+    });
+});
+
+// Obtener todos los tipos de gasto
+app.get('/api/expenses-types', (req, res) => {
+    console.log('Recibiendo solicitud GET /api/expenses-types...');
+    db.all('SELECT * FROM expenses_types ORDER BY description ASC', [], (err, rows) => {
+        if (err) {
+            console.error('Error al obtener los tipos de gasto:', err.message);
+            return res.status(500).json({
+                status: 'error',
+                message: 'Error al obtener los tipos de gasto.',
+            });
+        }
+        res.json(rows);
     });
 });
 
