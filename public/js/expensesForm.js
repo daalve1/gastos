@@ -109,6 +109,12 @@ export default function initializeEvents() {
 
     // Manejar evento de cambio en el campo de comentario
     document.getElementById('comment').addEventListener('input', handleChangeComment);
+
+    // Inicializar datapicker con MM/YYYY
+    const datepicker = document.getElementById('date');
+    datepicker.type = 'month';
+    datepicker.valueAsDate = new Date();
+
 }
 
 // end::functions

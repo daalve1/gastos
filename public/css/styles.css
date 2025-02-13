@@ -12,7 +12,7 @@ body {
     max-width: 500px;
 }
 
-select, input[type="text"], input[type="number"], input[type="date"] {
+select, input[type="text"], input[type="number"], input[type="month"] {
     width: 100%;
     padding: 8px;
     border: 1px solid #ddd;
