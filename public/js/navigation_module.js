@@ -42,7 +42,7 @@ async function handleNavigation() {
     if (path === '/expenses') {
         import('./expensesList.js').then(module => module.default());
 
-    } else if (path === '/add-expense') {
+    } else if (path === '/' || path === '/add-expense') {
         import('./expensesForm.js').then(module => module.default());
     }
 }
