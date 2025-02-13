@@ -1,6 +1,9 @@
 // expensesList.js - Maneja la carga de los gastos y su visualización
 
 import { showToast } from './toast_module.js';
+import { getTiposDeGasto, obtenerDescripcionPorId } from './utils.js';
+
+var tiposGasto = [];
 
 // Función para mostrar el modal de confirmación
 function showConfirmationModal(expenseId) {
@@ -32,20 +35,24 @@ async function deleteExpense(expenseId) {
     }
 }
 
-export default async function loadExpenses() {
+// Función async para cargar los tipos de gasto
+async function cargarTiposDeGasto() {
+    // Obtenemos los tipos de gasto de la api
+    tiposGasto = await getTiposDeGasto();
+}
+
+async function loadExpenses() {
     console.log('Cargando gastos...');
 
     const response = await fetch('/api/expenses');
 
     if (response.ok) {
-        console.log(response);
         const expenses = await response.json();
 
         const tableBody = document.querySelector('#expensesTable tbody');
         tableBody.innerHTML = ''; // Limpiar la tabla antes de añadir los nuevos datos
 
         expenses.forEach(expense => {
-            console.log(expense);
             const row = document.createElement('tr');
 
             // Crear el icono de eliminar programáticamente
@@ -60,7 +67,7 @@ export default async function loadExpenses() {
 
             // Crear las celdas de la tabla
             const expenseTypeCell = document.createElement('td');
-            expenseTypeCell.textContent = expense.expenseType;
+            expenseTypeCell.textContent = obtenerDescripcionPorId(expense.expenseType, tiposGasto);
 
             const commentCell = document.createElement('td');
             commentCell.textContent = expense.comment;
@@ -87,4 +94,12 @@ export default async function loadExpenses() {
     } else {
         showToast('No se pudo cargar los gastos', 'danger');
     }
+}
+
+export default function initialize() {
+    // Cargar los tipos de gasto
+    cargarTiposDeGasto();
+
+    // Cargar los gastos
+    loadExpenses();
 }

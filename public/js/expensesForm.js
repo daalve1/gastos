@@ -3,6 +3,7 @@
  */
 
 import { showToast } from './toast_module.js';
+import { getTiposDeGasto } from './utils.js';
 import { validateForm } from './validation_module.js';
 
 // tag::functions
@@ -41,16 +42,11 @@ async function enviarGasto(form) {
 
 // Función async para cargar los tipos de gasto y poblar el select
 async function cargarTiposDeGasto() {
+    // Obtenemos los tipos de gasto de la api
+    const data = await getTiposDeGasto();
 
-    const response = await fetch('/api/expenses-types');
-
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`); // Lanza un error si la respuesta HTTP no es exitosa
-    }
-
-    const data = await response.json(); // Convierte la respuesta a JSON y espera el resultado
-
-    const selectExpensesTypes = document.getElementById('expenseType'); // Obtiene el elemento select por su ID
+    // Obtiene el elemento select por su ID
+    const selectExpensesTypes = document.getElementById('expenseType'); 
 
     if (!selectExpensesTypes) {
         console.error('Elemento select con id "expenseType" no encontrado en el HTML.');
